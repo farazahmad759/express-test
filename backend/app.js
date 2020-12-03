@@ -6,24 +6,24 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-var { authMiddleware } = require("./middlewares/auth.middlewares");
-var authRouter = require("./routes/auth.routes");
+// var { authMiddleware } = require("./middlewares/auth.middlewares");
+// var authRouter = require("./routes/auth.routes");
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users.routes");
+// var usersRouter = require("./routes/users.routes");
 
 // client
-var qbClientPrintablesRouter = require("./routes/client-qb-printables.routes");
+// var qbClientPrintablesRouter = require("./routes/client-qb-printables.routes");
 
 // superadmin
-var qbSuperadminBoardyearsRouter = require("./routes/superadmin-qb-boardyears.routes");
-var qbSuperadminGradesRouter = require("./routes/superadmin-qb-grades.routes");
-var qbSuperadminPrintablesRouter = require("./routes/superadmin-qb-printables.routes");
-var qbSuperadminQuestionsRouter = require("./routes/superadmin-qb-questions.routes");
-var qbSuperadminQuestiontypesRouter = require("./routes/superadmin-qb-questiontypes.routes");
-var qbSuperadminSubjectsRouter = require("./routes/superadmin-qb-subjects.routes");
-var qbSuperadminSyllabusesRouter = require("./routes/superadmin-qb-syllabuses.routes");
-var qbSuperadminTagsRouter = require("./routes/superadmin-qb-tags.routes");
-var qbSuperadminTopicsRouter = require("./routes/superadmin-qb-topics.routes");
+// var qbSuperadminBoardyearsRouter = require("./routes/superadmin-qb-boardyears.routes");
+// var qbSuperadminGradesRouter = require("./routes/superadmin-qb-grades.routes");
+// var qbSuperadminPrintablesRouter = require("./routes/superadmin-qb-printables.routes");
+// var qbSuperadminQuestionsRouter = require("./routes/superadmin-qb-questions.routes");
+// var qbSuperadminQuestiontypesRouter = require("./routes/superadmin-qb-questiontypes.routes");
+// var qbSuperadminSubjectsRouter = require("./routes/superadmin-qb-subjects.routes");
+// var qbSuperadminSyllabusesRouter = require("./routes/superadmin-qb-syllabuses.routes");
+// var qbSuperadminTagsRouter = require("./routes/superadmin-qb-tags.routes");
+// var qbSuperadminTopicsRouter = require("./routes/superadmin-qb-topics.routes");
 
 var app = express();
 
@@ -39,22 +39,22 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(cors()); //
 app.use("/", indexRouter);
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/users", usersRouter);
+// app.use("/api/v1/auth", authRouter);
+// app.use("/api/v1/users", usersRouter);
 
 // client
-app.use("/api/v1/client/printables", qbClientPrintablesRouter);
+// app.use("/api/v1/client/printables", qbClientPrintablesRouter);
 
 // superadmin
-app.use("/api/v1/superadmin/boardyears", qbSuperadminBoardyearsRouter);
-app.use("/api/v1/superadmin/grades", qbSuperadminGradesRouter);
-app.use("/api/v1/superadmin/printables", qbSuperadminPrintablesRouter);
-app.use("/api/v1/superadmin/questions", qbSuperadminQuestionsRouter);
-app.use("/api/v1/superadmin/questiontypes", qbSuperadminQuestiontypesRouter);
-app.use("/api/v1/superadmin/subjects", qbSuperadminSubjectsRouter);
-app.use("/api/v1/superadmin/syllabuses", qbSuperadminSyllabusesRouter);
-app.use("/api/v1/superadmin/tags", qbSuperadminTagsRouter);
-app.use("/api/v1/superadmin/topics", qbSuperadminTopicsRouter);
+// app.use("/api/v1/superadmin/boardyears", qbSuperadminBoardyearsRouter);
+// app.use("/api/v1/superadmin/grades", qbSuperadminGradesRouter);
+// app.use("/api/v1/superadmin/printables", qbSuperadminPrintablesRouter);
+// app.use("/api/v1/superadmin/questions", qbSuperadminQuestionsRouter);
+// app.use("/api/v1/superadmin/questiontypes", qbSuperadminQuestiontypesRouter);
+// app.use("/api/v1/superadmin/subjects", qbSuperadminSubjectsRouter);
+// app.use("/api/v1/superadmin/syllabuses", qbSuperadminSyllabusesRouter);
+// app.use("/api/v1/superadmin/tags", qbSuperadminTagsRouter);
+// app.use("/api/v1/superadmin/topics", qbSuperadminTopicsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
