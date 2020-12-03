@@ -1,0 +1,667 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+
+<div style="width: 100%;">
+    <input type="file" id="selectFiles" value="Import" /><br />
+    <button id="import" onclick="uploadToDatabase('grades');">+ Grades</button>
+    <button id="import" onclick="uploadToDatabase('subjects');">+ Subjects</button>
+    <button id="import" onclick="uploadSyllabuses();">+ Syllabuses</button>
+    <button id="import" onclick="uploadBoardyears();">+ Boardyears</button>
+    <button id="import" onclick="uploadToDatabase('question_types');">+ Question Types</button>
+    <button id="import" onclick="uploadToDatabase('question_types_cs');">+ Question Types CS</button>
+    <button id="import" onclick="uploadToDatabase('topics');">+ Topics</button>
+    <button id="import" onclick="uploadToDatabase('questions');">+ Questions</button>
+    <button id="import" onclick="questionsCronJob([1,50]);">Questions CronJob</button>
+
+</div>
+<textarea id="result" style="width: 100%;" rows="30"></textarea>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+    integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+    crossorigin="anonymous">
+    </script>
+<script src="../js/getFormattedTopicNumber.js"></script>
+<script>
+
+    function uploadToDatabase(upload_type) {
+        var files = document.getElementById('selectFiles').files;
+        console.log(files);
+        if (files.length <= 0) {
+            return false;
+        }
+
+        var fr = new FileReader();
+
+        fr.onload = function (e) {
+            var result = JSON.parse(e.target.result);
+            var data = result[2].data;
+            var formatted = JSON.stringify(data, null, 2);
+            document.getElementById('result').value = formatted;
+            if (upload_type == "grades") {
+                uploadGrades(data);
+            }
+            else if (upload_type == "subjects") {
+                uploadSubjects(data);
+            }
+            else if (upload_type == "question_types") {
+                uploadQuestionTypes(data);
+            }
+            else if (upload_type == "question_types_cs") {
+                uploadQuestionTypesCS(data);
+            }
+            else if (upload_type == "topics") {
+                uploadTopics(data);
+            }
+            else if (upload_type == "questions") {
+                uploadQuestions(data);
+            }
+        }
+
+        fr.readAsText(files.item(0));
+    }
+    function uploadGrades(data) {
+        console.log(data);
+        data.forEach(item => {
+            axios.post('http://localhost:8000/api/v1/superadmin/grades', {
+                _title: "Class " + item.class_name,
+                _raw: { ...item }
+            }).then(ret => {
+                console.log(item, ret)
+            })
+        })
+    }
+    function uploadSubjects(data) {
+        console.log(data);
+        data.forEach(item => {
+            axios.post('http://localhost:8000/api/v1/superadmin/subjects', {
+                _title: item.subject_name,
+                _raw: { ...item }
+            }).then(ret => {
+                console.log(item, ret)
+            })
+        })
+    }
+    function uploadSyllabuses() {
+        let data = [
+            {
+                _title: 'UHS 2019',
+                _shortcode: 'UHS-2019',
+                _created_by: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+            },
+            {
+                _title: 'UHS 2020',
+                _shortcode: 'UHS-2020',
+                _created_by: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+            },
+            {
+                _title: 'NUMS 2019',
+                _shortcode: 'NUMS-2019',
+                _created_by: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+            },
+            {
+                _title: 'NUMS 2020',
+                _shortcode: 'NUMS-2020',
+                _created_by: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+            },
+            {
+                _title: 'Punjab Curriculum and Textbook Board 2002',
+                _shortcode: 'PCTB-2002',
+                _created_by: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+            },
+        ];
+        data.forEach(item => {
+            axios.post('http://localhost:8000/api/v1/superadmin/syllabuses', {
+                _title: item._title,
+                _shortcode: item._shortcode,
+                _type: item._type,
+                _created_by: item._createdBy,
+                _raw: { ...item }
+            }).then(ret => {
+                console.log(item, ret)
+            })
+        })
+    }
+
+    function uploadQuestionTypes(data) {
+        console.log(data);
+
+        data.forEach(item => {
+            axios.post('http://localhost:8000/api/v1/superadmin/questiontypes', {
+                _title: item.title,
+                _type: "_independent_for_question",
+                _raw: { ...item }
+            }).then(ret => {
+                console.log(item, ret)
+            })
+        })
+    }
+
+    async function uploadQuestionTypesCS(data) {
+        let __grades;
+        let __subjects;
+        let __parent;
+        let __syllabuses;
+        __syllabuses = await getMappedSyllabus("PCTB-2002");
+
+        let old_grade_id = 0;
+        let old_subject_id = 0;
+        let old_q_type_id = 0;
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            if (item.class_id != old_grade_id) {
+                __grades = await getMappedGrade(item.class_id);
+                old_grade_id = item.class_id;
+            }
+            if (item.subject_id != old_subject_id) {
+                __subjects = await getMappedSubject(item.subject_id);
+                old_subject_id = item.subject_id;
+            }
+            if (item.q_type_id != old_q_type_id) {
+                __parent = await getMappedQType(item.q_type_id);
+                old_q_type_id = item.q_type_id;
+            }
+
+            let uploadData = {
+                _title: __parent ? __parent._title : '',
+                _type: "_dependent_for_question",
+                _raw: { ...item },
+                _grade_id: __grades ? [__grades.id] : null,
+                _subject_id: __subjects ? [__subjects.id] : null,
+                _syllabus_id: __syllabuses ? [__syllabuses.id] : null,
+                _parent_id: __parent ? __parent.id : null,
+            }
+            uploadData['___temp'] = JSON.stringify(uploadData);
+            axios.post('http://localhost:8000/api/v1/superadmin/questiontypes', uploadData).then(ret => {
+                console.log(item, ret)
+            })
+        }
+    }
+    async function uploadTopics(data) {
+        let __grades;
+        let __subjects;
+        let __syllabuses_uhs = await getMappedSyllabus("UHS-2019");
+        let __syllabuses_pctb = await getMappedSyllabus("PCTB-2002");
+        let old_grade_id = 0;
+        let old_subject_id = 0;
+
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            if (i < 100000000) {
+                if (item.class_id != old_grade_id) {
+                    __grades = await getMappedGrade(item.class_id);
+                    old_grade_id = item.class_id;
+                }
+                if (item.subject_id != old_subject_id) {
+                    __subjects = await getMappedSubject(item.subject_id);
+                    old_subject_id = item.subject_id;
+                }
+                let __syllabuses;
+                if (item.article_formatted.includes("UHS")) {
+                    __syllabuses = __syllabuses_uhs;
+                } else {
+                    __syllabuses = __syllabuses_pctb;
+                }
+                axios.post('http://localhost:8000/api/v1/superadmin/topics', {
+                    _title: removePaddingStart(item.article_formatted) + " - " + item.title,
+                    _type: "_topic",
+                    _misc: {},
+                    "_raw": { ...item },
+                    _grade_id: __grades ? [__grades.id] : null,
+                    _subject_id: __subjects ? [__subjects.id] : null,
+                    _syllabus_id: __syllabuses ? [__syllabuses.id] : null,
+                }).then(ret => {
+                    console.log(item, ret)
+                })
+            }
+        }
+    }
+
+    async function uploadBoardyears() {
+        let boardNames = [{
+            title: "Lahore Board",
+            "code": "LHR"
+        }, {
+            title: "Gujranwala Board",
+            "code": "GJR"
+        }, {
+            title: "Faisalabad Board",
+            "code": "FAI"
+        }, {
+            title: "Multan Board",
+            "code": "MUL"
+        }, {
+            title: "Multan Board",
+            "code": "MUL"
+        }, {
+            title: "Rawalpindi Board",
+            "code": "RAW"
+        }, {
+            title: "Bahawalpur Board",
+            "code": "BAH"
+        }, {
+            title: "Dera Ghazi Khan Board",
+            "code": "DGK"
+        }, {
+            title: "Sahiwal Board",
+            "code": "SAH"
+        }, {
+            title: "Federal Board",
+            "code": "FED"
+        }];
+        let initialYear = 2000;
+        let boardYearGroups = ["G1", "G2", "Imp"];
+
+        let __syllabuses;
+        __syllabuses = await getMappedSyllabus("PCTB-2002");
+
+        boardNames.forEach(item => {
+            for (i = initialYear; i <= 2020; i++) {
+                boardYearGroups.forEach(byg => {
+                    let hhh = {
+                        _title: item.title + " " + i + " (" + byg + ")",
+                        _shortcode: item.code + "-" + i + "-" + byg,
+                        _syllabus_id: __syllabuses ? __syllabuses.id : null,
+                        _raw: { ...item },
+                    };
+                    axios.post('http://localhost:8000/api/v1/superadmin/boardyears', {
+                        ...hhh
+                    }).then(ret => {
+                        console.log(item, ret)
+                    })
+                })
+
+            }
+        })
+        for (i = initialYear; i <= 2020; i++) {
+            let hhh = {
+                _title: "MDCAT " + i,
+                _shortcode: "MDCAT-" + i,
+            };
+            axios.post('http://localhost:8000/api/v1/superadmin/boardyears', {
+                ...hhh
+            }).then(ret => {
+                console.log(ret)
+            })
+            hhh = {
+                _title: "ECAT " + i,
+                _shortcode: "ECAT-" + i,
+            };
+            axios.post('http://localhost:8000/api/v1/superadmin/boardyears', {
+                ...hhh
+            }).then(ret => {
+                console.log(ret)
+            })
+            hhh = {
+                _title: "NUMS " + i,
+                _shortcode: "NUMS-" + i,
+            };
+            axios.post('http://localhost:8000/api/v1/superadmin/boardyears', {
+                ...hhh
+            }).then(ret => {
+                console.log(ret)
+            })
+        }
+    }
+
+    async function uploadQuestions(data) {
+        let __grades;
+        let __subjects;
+        let __q_type_ids;
+        let __q_type_ids_c_s;
+        let old_grade_id = 0;
+        let old_subject_id = 0;
+        let old_q_type_id = 0;
+        let __syllabuses_uhs = await getMappedSyllabus("UHS-2019");
+        let __syllabuses_pctb = await getMappedSyllabus("PCTB-2002");
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            if (item.class_level != old_grade_id) {
+                __grades = await getMappedGrade(item.class_level);
+                old_grade_id = item.class_level;
+            }
+            if (item.s_id != old_subject_id) {
+                __subjects = await getMappedSubject(item.s_id);
+                old_subject_id = item.s_id;
+            }
+            if (item.q_type_id != old_q_type_id) {
+                __q_type_ids = await getMappedQType(item.q_type_id);
+                old_q_type_id = item.q_type_id;
+            }
+            let __boardyears_count = item.board_year ? item.board_year.split(',').length : 0;
+            let __boardyears;
+            __boardyears = await getMappedBoardyears(item.board_year);
+
+            let __topics;
+            let _t1 = __grades ? __grades.id : null;
+            let _t2 = __subjects ? __subjects.id : null;
+            let _t3 = __syllabuses_pctb ? __syllabuses_pctb.id : null;
+            let _t4 = __syllabuses_uhs ? __syllabuses_uhs.id : null;
+            __topics = await getMappedTopics(item.article, _t1, _t2, _t3, _t4);
+            __q_type_ids_c_s = await getMappedQTypeCS(item.article, item.q_type_id, _t1, _t2, _t3, _t4);
+            axios.post('http://localhost:8000/api/v1/superadmin/questions', {
+                _content: {
+                    _statements: {
+                        _en: item.question,
+                        _ur: item.question_u,
+                    },
+                    _choices: [
+                        {
+                            _en: item.option_a,
+                            _ur: item.option_a_u,
+                            _is_correct: item.correct_ans == "A" ? true : false,
+                            _comment_en: "",
+                            _comment_ur: ""
+                        },
+                        {
+                            _en: item.option_b,
+                            _ur: item.option_b_u,
+                            _is_correct: item.correct_ans == "B" ? true : false,
+                            _comment_en: "",
+                            _comment_ur: ""
+                        },
+                        {
+                            _en: item.option_c,
+                            _ur: item.option_c_u,
+                            _is_correct: item.correct_ans == "C" ? true : false,
+                            _comment_en: "",
+                            _comment_ur: ""
+                        },
+                        {
+                            _en: item.option_d,
+                            _ur: item.option_d_u,
+                            _is_correct: item.correct_ans == "D" ? true : false,
+                            _comment_en: "",
+                            _comment_ur: ""
+                        },
+                    ],
+                    _answers: {
+                        _en: '',
+                        _ur: ''
+                    }
+                },
+                _misc: {
+                    _difficulty: 1,
+                    _boardyears_count: __boardyears_count,
+                },
+                _type: "_question",
+                _grade_id: __grades ? __grades.id : null,
+                _subject_id: __subjects ? __subjects.id : null,
+                _questiontype_ind_id: __q_type_ids ? __q_type_ids.id : null,
+                _questiontype_dep_id: __q_type_ids_c_s ? __q_type_ids_c_s.id : null,
+                setAssoc_topics: __topics && __topics ? __topics : null, //Todo
+                setAssoc_boardyears: __boardyears ? __boardyears : null,
+                _raw: { ...item },
+
+            }).then(ret => {
+                console.log(__q_type_ids);
+            })
+        }
+    }
+
+    async function questionsCronJob(idRange) {
+        let questionIds = [];
+        let params = {};
+        if(idRange) {
+            params.idRange = idRange;
+        }
+        let data = await axios.get('http://localhost:8000/api/v1/superadmin/questions', {
+            params: {
+                ...params,
+                filterAttributes: ['id'],
+                filterLimit: parseInt(idRange[1]) - parseInt(idRange[0])
+            }
+        });
+        let questions = data.data.data;
+        for(let i = 0; i < questions.length; i++) {
+            questionIds.push(questions[i].id);
+        }
+        data = await axios.get('http://localhost:8000/api/v1/superadmin/questions', {
+            params: {
+                ...params,
+                filterIds: questionIds,
+                includeAssoc_topics: 'false',
+                includeAssoc_boardyears: 'false',
+                filterLimit: parseInt(idRange[1]) - parseInt(idRange[0])
+            }
+        });
+        questions = data.data.data;
+        for(let i = 0; i < questions.length; i++) {
+            let question = questions[i];
+            // fetch topics and extract grades, subjects, syllabuses from them
+            let _tempGrades = [];
+            let _tempSubjects = [];
+            let _tempSyllabuses = [];
+            let _tempBoardyears = [];
+            for(let j = 0; j < question.assoc_topics.length; j++) {
+                _tempGrades.push(question.assoc_topics[j]._grade_id);
+                _tempSubjects.push(question.assoc_topics[j]._subject_id);
+                _tempSyllabuses.push(question.assoc_topics[j]._syllabus_id);
+            }
+            for(let j = 0; j < question.assoc_boardyears.length; j++) {
+                _tempBoardyears.push(question.assoc_boardyears[j].id);
+            }
+
+            // store topics, boardyears, grades, subjects, syllabuses to _misc._associations
+            let _misc = question._misc;
+            _misc._associations = {
+                _grades: ',' + _tempGrades.toString() + ',',
+                _subjects: ',' + _tempSubjects.toString() + ',',
+                _syllabuses: ',' + _tempSyllabuses.toString() + ',',
+                _boardyears: ',' + _tempBoardyears.toString() + ',',
+            }
+            await axios.put(`http://localhost:8000/api/v1/superadmin/questions/${question.id}`, {
+                _content: question._content,
+                _misc: {
+                    ..._misc
+                }
+            });
+            console.log("_misc ==== ", _misc);
+        }
+    }
+
+    async function getMappedGrade(class_level_id) {
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/grades', {
+            params: {
+                '_raw_class_level_id': class_level_id,
+            }
+        });
+        ret = ret.data.data;
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                return ret[0];
+            }
+        }
+        return null;
+    }
+
+    async function getMappedSubject(s_id) {
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/subjects', {
+            params: {
+                '_raw_s_id': s_id,
+            }
+        });
+        ret = ret.data.data;
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                return ret[0];
+            }
+        }
+        return null;
+    }
+    async function getMappedSyllabus(_shortcode) {
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/syllabuses', {
+            params: {
+                '_shortcode': _shortcode,
+            }
+        });
+        ret = ret.data.data;
+        console.log("syllabuses", ret);
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                return ret[0];
+            }
+        }
+        return null;
+    }
+
+    async function getMappedQType(q_type_id) {
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/questiontypes', {
+            params: {
+                '_type': '_independent_for_question',
+                '_raw_q_type_id': q_type_id,
+            }
+        });
+        ret = ret.data.data;
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                return ret[0];
+            }
+        }
+        return null;
+    }
+
+    async function getMappedQTypeCS(commaSeparatedTopics, q_type_id, gradeId, subjectId, syllabusPCTBId,
+        syllabusUHSId) {
+        let SyllabusId;
+        if (!commaSeparatedTopics) {
+            commaSeparatedTopics = "";
+        }
+        if (commaSeparatedTopics.includes("UHS")) {
+            syllabusId = syllabusUHSId;
+        } else {
+            syllabusId = syllabusPCTBId;
+        }
+
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/questiontypes', {
+            params: {
+                '_type': '_dependent_for_question',
+                _grade_id: [gradeId],
+                _subject_id: [subjectId],
+                _syllabus_id: [syllabusId],
+                '_raw_q_type_id': q_type_id,
+            }
+        });
+        ret = ret.data.data;
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                return ret[0];
+            }
+        }
+        return null;
+    }
+
+    async function getMappedBoardyears(boardyearString) {
+        let boardyearsArray = boardyearString;
+        if (!boardyearsArray) {
+            boardyearsArray = "";
+        }
+        boardyearsArray = boardyearsArray.replaceAll(" ", "-");
+        boardyearsArray = boardyearsArray.replaceAll("---", "-");
+        boardyearsArray = boardyearsArray.replaceAll("--", "-");
+        boardyearsArray = boardyearsArray.split(",");
+        boardyearsArray.forEach((item, i) => {
+            if (item.substring(0, 1) == "-") {
+                boardyearsArray[i] = item.substring(1);
+            }
+        })
+        let ret = await axios.get('http://localhost:8000/api/v1/superadmin/boardyears', {
+            params: {
+                'filter__shortcodesArray': boardyearsArray,
+            }
+        });
+        ret = ret.data.data;
+        if (typeof ret == typeof []) {
+            if (ret.length > 0) {
+                let result = ret.map(a => a.id);
+                return result;
+            }
+        }
+        return null;
+    }
+
+    async function getMappedTopics(commaSeparatedTopics, gradeId, subjectId, syllabusPCTBId,
+        syllabusUHSId) {
+        //        commaSeparatedTopics = "A03.12.c., UHS02.9.";
+        let topicsArray = commaSeparatedTopics;
+        let formattedArray = [];
+        let syllabusId;
+        if (!topicsArray) {
+            topicsArray = "";
+        }
+        topicsArray = topicsArray.split(",");
+        if (topicsArray.length == 0) {
+            return null;
+        }
+        // console.log("1. === ", topicsArray);
+        for (let i = 0; i < topicsArray.length; i++) {
+            // console.log("================= ");
+            let topicString = topicsArray[i] + " - ";
+            topicString = topicString.trim();
+            //console.log("2. ===", topicString);
+            if (topicString.includes("UHS")) {
+                syllabusId = syllabusUHSId;
+                topicString = topicString.replaceAll("UHS", "");
+            } else {
+                syllabusId = syllabusPCTBId;
+                topicString = topicString.replaceAll("A", "");
+            }
+            //console.log("3. ===", topicString);
+            let {
+                topicLevel,
+                topicFormat,
+            } = getFormattedTopicNumber(topicString);
+            //console.log("4. ===", topicFormat);
+            let formattedString = topicFormat;
+            //            formattedString = formattedString.substring(5);
+            //            formattedString = formattedString.substring(0, 10);
+            let ret = await axios.get('http://localhost:8000/api/v1/superadmin/topics', {
+                params: {
+                    _tree_format: [topicFormat],
+                    _grade_id: [gradeId],
+                    _subject_id: [subjectId],
+                    _syllabus_id: [syllabusId],
+                }
+            });
+            ret = ret.data.data;
+            // console.log("5. ===", ret[0]);
+            if (typeof ret == typeof []) {
+                if (ret.length > 0) {
+                    // formattedArray = [...formattedArray, ...ret];
+                    formattedArray.push(ret[0]);
+                }
+            }
+            // console.log("========>", formattedArray);
+        }
+
+        // console.log("=====", ret);
+        // console.log({ topicString, gradeId, subjectId, syllabusUHSId, syllabusPCTBId, data: ret.data.data });
+        if (typeof formattedArray == typeof []) {
+            if (formattedArray.length > 0) {
+                let result = formattedArray.map(a => a.id);
+                return result;
+            }
+        }
+        return null;
+    }
+    function removePaddingStart(paddedString) {
+        let ggg = paddedString;
+        ggg = ggg.replaceAll("A", "");
+        ggg = ggg.replaceAll("UHS", "");
+        ggg = ggg.split(".");
+
+        let intArray = [];
+        ggg.forEach((item, i) => {
+            ggg[i] = parseInt(ggg[i]);
+            if (ggg[i] > 0) {
+                intArray.push(ggg[i]);
+            }
+        })
+        let ret = "";
+        intArray.forEach((item, i) => {
+            ret += intArray[i] + ".";
+        });
+        ret = ret.slice(0, -1)
+        ret = ret.substring(2);
+        return ret;
+    }
+
+</script>

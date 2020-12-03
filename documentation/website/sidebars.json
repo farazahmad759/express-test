@@ -1,0 +1,23 @@
+{
+  "docs": {
+    "Tag": [
+      "__tag",
+      "__tag_question_parenttype",
+      "__tag_question_type",
+      "__tag_grade",
+      "__tag_subject",
+      "__tag_syllabus",
+      "__tag_boardyear",
+      "__tag_book",
+      "__tag_section",
+      "__tag_chapter",
+      "__tag_topic"
+    ],
+    "QbPost": ["__question", "__exams", "__passage"],
+    "How Tos": ["__howto_filter_questions", "__howto_make_exams"],
+    "Second Category": ["doc3"]
+  },
+  "docs-other": {
+    "First Category": ["doc4", "doc5"]
+  }
+}

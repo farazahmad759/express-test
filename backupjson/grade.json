@@ -1,0 +1,15 @@
+[
+{"type":"header","version":"4.9.2","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"studyapp_ooo"},
+{"type":"table","name":"class_level","database":"studyapp_ooo","data":
+[
+{"class_level_id":"1","class_name":"8th","status":"0"},
+{"class_level_id":"2","class_name":"9th","status":"1"},
+{"class_level_id":"3","class_name":"10th","status":"1"},
+{"class_level_id":"4","class_name":"11th","status":"1"},
+{"class_level_id":"5","class_name":"12th","status":"1"},
+{"class_level_id":"6","class_name":"FSc Practicals","status":"0"},
+{"class_level_id":"7","class_name":"FSc Practicals 12","status":"0"}
+]
+}
+]

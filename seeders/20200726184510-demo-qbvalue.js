@@ -1,0 +1,215 @@
+'use strict';
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkInsert(
+      'QbValues',
+      [
+        // Column = __status |||||||||||||||||||||||||
+        {
+          title: 'Draft',
+          description: 'Just created',
+          __shortcode: '__draft',
+          __type: '__column__status',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Pending',
+          description: 'Created. But proof-reading pending or in progress',
+          __shortcode: '__pending',
+          __type: '__column__status',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Published',
+          __shortcode: '__published',
+          description: 'Proof reading complete. Record is available',
+          __type: '__column__status',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Disabled',
+          __shortcode: '__disabled',
+          description:
+            'Record was published, but currently it is not available (maybe due to discovery of a new error, or for any other reasons). It is mostly a short-term status, that is expected to be changed to Published soon after the removal of error',
+          __type: '__column__status',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Archived',
+          __shortcode: '__archived',
+          description:
+            'Record has been archived. It means most probably the Record will not be needed anymore',
+          __type: '__column__status',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+
+        // Column = __type ||||||||||||||||||||||||
+        // Tags Model
+        {
+          title: 'Grade',
+          __shortcode: '__grade',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Subject',
+          __shortcode: '__subject',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Syllabus',
+          __shortcode: '__syllabus',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Boardyear',
+          __shortcode: '__boardyear',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Topic',
+          __shortcode: '__topic',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Question Supertype',
+          __shortcode: '__question_supertype',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Question Type',
+          __shortcode: '__question_type',
+          __type: '__column__type',
+          __tablename: 'tags',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        // QbPosts Model
+        {
+          title: 'Question',
+          __shortcode: '__question',
+          __type: '__column__type',
+          __tablename: 'qbposts',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Passage',
+          __shortcode: '__passage',
+          __type: '__column__type',
+          __tablename: 'qbposts',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Exam',
+          __shortcode: '__exam',
+          __type: '__column__type',
+          __tablename: 'qbposts',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Article',
+          __shortcode: '__article',
+          __type: '__column__type',
+          __tablename: 'qbposts',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        // Column = __visibility ||||||||||||||||||||
+        {
+          title: 'Public',
+          description: 'Visible to everyone. free of cost',
+          __shortcode: '__public',
+          __type: '__column__visibility',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Paid',
+          description: 'Only visible to paid customers.',
+          __shortcode: '__paid',
+          __type: '__column__visibility',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Team',
+          description: 'Only visible to the owner and his team.',
+          __shortcode: '__team',
+          __type: '__column__visibility',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          title: 'Paid',
+          description: 'Only visible to the owner and the paid customers.',
+          __shortcode: '__paid',
+          __type: '__column__visibility',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        // Column = __shortcode ||||||||||||||
+        {
+          title: 'Question (MCQ)',
+          description: 'This applies to all question with multiple choices',
+          __shortcode: '__question_mcq',
+          __type: '__column__shortcode',
+          __tablename: 'tags.__post_supertype',
+          __createdBy: 'b2Pq2vt503a6dRSbxBoOKBB1m623',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
+      {}
+    );
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('QbValues', null, {});
+  },
+};

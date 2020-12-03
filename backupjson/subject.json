@@ -1,0 +1,19 @@
+[
+{"type":"header","version":"4.9.2","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"studyapp_ooo"},
+{"type":"table","name":"subject","database":"studyapp_ooo","data":
+[
+{"s_id":"15","category_id":"13","subcategory_id":"20","subject_name":"Mathematics","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"16","category_id":"13","subcategory_id":"20","subject_name":"Physics","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"19","category_id":"13","subcategory_id":"20","subject_name":"Dummy","subject_status":"1","classes_list":null},
+{"s_id":"20","category_id":"13","subcategory_id":"20","subject_name":"Biology","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"21","category_id":"13","subcategory_id":"20","subject_name":"English","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"22","category_id":"13","subcategory_id":"20","subject_name":"Islamic Studies","subject_status":"1","classes_list":"2,3,4"},
+{"s_id":"23","category_id":"13","subcategory_id":"20","subject_name":"Pak studies","subject_status":"1","classes_list":"2,3,5"},
+{"s_id":"24","category_id":"13","subcategory_id":"20","subject_name":"Chemistry","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"25","category_id":"13","subcategory_id":"20","subject_name":"Rules of data-entry","subject_status":"0","classes_list":null},
+{"s_id":"26","category_id":"13","subcategory_id":"20","subject_name":"Urdu","subject_status":"1","classes_list":"2,3,4,5"},
+{"s_id":"27","category_id":"13","subcategory_id":"20","subject_name":"Computer Science","subject_status":"1","classes_list":"2,3,4,5"}
+]
+}
+]

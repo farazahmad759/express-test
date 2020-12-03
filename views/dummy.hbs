@@ -1,0 +1,71 @@
+<h1>{{title}}</h1>
+<p>Welcome to {{title}}</p>
+
+<div style="width: 100%;">
+</div>
+<textarea id="result" style="width: 100%;" rows="30"></textarea>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+    integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+    crossorigin="anonymous">
+    </script>
+<script src="../js/getFormattedTopicNumber.js"></script>
+<script>
+
+    // getMappedTopics("A01., A05.", 1, 1, 1, 1);
+    async function getMappedTopics(commaSeparatedTopics, gradeId, subjectId, syllabusPCTBId, syllabusUHSId) {
+        let topicsArray = commaSeparatedTopics;
+        let formattedArray = [];
+        let syllabusId;
+        if (!topicsArray) {
+            topicsArray = "";
+        }
+        topicsArray = topicsArray.split(",");
+        if (topicsArray.length == 0) {
+            return null;
+        }
+        console.log("1. === ", topicsArray);
+        for (let i = 0; i < topicsArray.length; i++) {
+            console.log("================= ");
+            let topicString = topicsArray[i] + " - ";
+            topicString = topicString.trim();
+            console.log("2. ===", topicString);
+            if (topicString.includes("UHS")) {
+                syllabusId = syllabusUHSId;
+                topicString = topicString.replaceAll("UHS", "");
+            } else {
+                syllabusId = syllabusPCTBId;
+                topicString = topicString.replaceAll("A", "");
+            }
+            console.log("3. ===", topicString);
+            let {
+                topicLevel,
+                topicFormat,
+            } = getFormattedTopicNumber(topicString);
+            console.log("4. ===", topicFormat);
+            let formattedString = topicFormat;
+            //            formattedString = formattedString.substring(5);
+            //            formattedString = formattedString.substring(0, 10);
+            formattedArray.push(topicFormat);
+        }
+
+        let ret = await axios.get('http://localhost:8000/api/v1/tags', {
+            params: {
+                '__type': '__topic',
+                'filter__tttFormatsArray': formattedArray,
+                filterGrades: [gradeId],
+                filterSubjects: [subjectId],
+                filterSyllabuses: [syllabusId],
+            }
+        });
+        ret = ret.data.data;
+        // console.log("=====", ret);
+        // console.log({ topicString, gradeId, subjectId, syllabusUHSId, syllabusPCTBId, data: ret.data.data });
+        if (ret.length > 0) {
+            let result = ret.map(a => a.id);
+            return result;
+        }
+        return null;
+    }
+
+
+</script>
