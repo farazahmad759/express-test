@@ -19,6 +19,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(express.static(path.join(__dirname, "../client/apps")));
+app.get("/static-html", function (req, res) {
+  res.sendFile(
+    path.join(__dirname, "../client/apps/static-html", "index.html")
+  );
+});
+
 if (process.env.NODE_ENV !== "production") {
   // Serve any static files
   app.use(express.static(path.join(__dirname, "../client/apps/app-1/build")));
