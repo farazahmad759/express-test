@@ -11,7 +11,7 @@ var app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+app.set("view engine", "hbs");
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -26,7 +26,7 @@ app.get("/static-html", function (req, res) {
   );
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV === "production") {
   // Serve any static files
   app.use(express.static(path.join(__dirname, "../client/apps/app-1/build")));
 
@@ -37,7 +37,7 @@ if (process.env.NODE_ENV !== "production") {
     );
   });
 } else {
-  app.use("/", indexRouter);
+  app.use("/app-1", indexRouter);
 }
 app.use("/users", usersRouter);
 
